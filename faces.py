@@ -1,76 +1,91 @@
-import threading
-from contourpy import max_threads
-from nudenet import NudeDetector
+# Final faces file: faces.py
+# Saves cropped faces from images in imgs/ to faces/ directory.
+
 from threading import Thread
+from retinaface import RetinaFace
 import os
 import cv2
+
+import sys
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 IMGDIR = "imgs"
 FACEDIR = "faces"
 
-# Directory structure:
-# imgs/
-#   - person1/
-#       - image1.jpg
-#       - image2.jpg
-#   - person2/
-#       - image1.jpg
-#       - image2.jpg
-# faces/
-#   - person1/
-#       - image1.jpg
-#       - image2.jpg
-#   - person2/
-#       - image1.jpg
-#       - image2.jpg
-
 for dir in os.listdir(IMGDIR):
-    os.makedirs(os.path.join(FACEDIR, dir), exist_ok=True)
+    if os.path.isdir(os.path.join(IMGDIR, dir)):
+        os.makedirs(os.path.join(FACEDIR, dir), exist_ok=True)
 
 
-def getFaceCoord(filepath: str) -> list | None:
-    detector = NudeDetector()
-    coords = detector.detect(filepath)
-    for coord in coords:
-        if coord["class"] == "FACE_FEMALE":
-            return coord["box"]
-    return None
+def getFaceCoords(image: cv2.typing.MatLike) -> list | None:
+    result: dict = RetinaFace.detect_faces(image)
+    return [result[key]["facial_area"] for key in result]
 
 
 def crop_and_save(dir: str, file: str) -> None:
     filepath = os.path.join(IMGDIR, dir, file)
-    savepath = os.path.join(FACEDIR, dir, file)
-    faceCoord = getFaceCoord(filepath)
-    if faceCoord:
+    filename = file.split(".")[0]
+    img = cv2.imread(filepath)
+    faceCoords = getFaceCoords(img)
+    for i, faceCoord in enumerate(faceCoords):
         [x1, y1, x2, y2] = faceCoord
-        img = cv2.imread(filepath)
-        face = img[y1 : y2 + y1, x1 : x2 + x1]
+        x1 = int(x1)
+        y1 = int(y1)
+        x2 = int(x2)
+        y2 = int(y2)
+        face = img[y1:y2, x1:x2]
         face = cv2.resize(face, (160, 160))
+        savepath = os.path.join(FACEDIR, dir, f"{filename}_face_{i}.jpg")
         cv2.imwrite(savepath, face)
-    print(f"Done {savepath}")
+        print(f"Done {savepath}")
 
 
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == "colab":
+        MAX_THREADS = 30
+    else:
+        MAX_THREADS = 3
     threads: list[Thread] = []
     for dir in os.listdir(IMGDIR):
-        for file in os.listdir(os.path.join(IMGDIR, dir)):
+        if os.path.isdir(os.path.join(IMGDIR, dir)):
+            for file in os.listdir(os.path.join(IMGDIR, dir)):
+                filename = file.split(".")[0]
+                if (
+                    file.endswith(".jpg")
+                    or file.endswith("png")
+                    and not os.path.exists(f"{FACEDIR}/{dir}/{filename}_face_1.jpg")
+                ):
+                    thread = Thread(
+                        target=crop_and_save,
+                        args=(
+                            dir,
+                            file,
+                        ),
+                    )
+                    thread.start()
+                    threads.append(thread)
+                    while len(threads) >= MAX_THREADS:
+                        for t in threads:
+                            if not t.is_alive():
+                                t.join()
+                                threads.remove(t)
+        else:
             if (
-                file.endswith(".jpg")
-                or file.endswith("png")
-                and not os.path.exists(os.path.join(FACEDIR, dir, file))
+                dir.endswith(".jpg")
+                or dir.endswith("png")
+                and not os.path.exists(f"{FACEDIR}/{dir}/{dir}_face_1.jpg")
             ):
                 thread = Thread(
                     target=crop_and_save,
                     args=(
+                        ".",
                         dir,
-                        file,
                     ),
                 )
                 thread.start()
                 threads.append(thread)
-                while len(threads) >= 6:
+                while len(threads) >= MAX_THREADS:
                     for t in threads:
                         if not t.is_alive():
                             t.join()
