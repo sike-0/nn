@@ -6,3 +6,4 @@ useless/*
 *.http
 *.jpg
 *.png
+*.ipynb
