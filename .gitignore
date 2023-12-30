@@ -1,0 +1,8 @@
+venv
+.env
+faces/*
+imgs/*
+useless/*
+*.http
+*.jpg
+*.png
