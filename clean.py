@@ -42,18 +42,40 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 IMGDIR = "imgs"
 
-# convert to the required directory structure
-for dir, subdirs, files in os.walk(IMGDIR):
-    if len(subdirs) == 0:
-        continue
-    for subdir in subdirs:
-        for file in os.listdir(os.path.join(dir, subdir)):
-            os.rename(os.path.join(dir, subdir, file), os.path.join(dir, file))
-        os.rmdir(os.path.join(dir, subdir))
+for file in os.listdir(IMGDIR):
+    if not os.path.isdir(os.path.join(IMGDIR, file)):
+        os.makedirs(os.path.join(IMGDIR, "loose"), exist_ok=True)
+        os.rename(os.path.join(IMGDIR, file), os.path.join(IMGDIR, "loose", file))
+
+for subdir in os.listdir(IMGDIR):
+    print(subdir)
+    if os.path.isdir(os.path.join(IMGDIR, subdir)):
+        for subsubdir in os.listdir(os.path.join(IMGDIR, subdir)):
+            print(subsubdir)
+            if os.path.isdir(os.path.join(IMGDIR, subdir, subsubdir)):
+                for file in os.listdir(os.path.join(IMGDIR, subdir, subsubdir)):
+                    os.makedirs(os.path.join(IMGDIR, subsubdir), exist_ok=True)
+                    os.rename(
+                        os.path.join(IMGDIR, subdir, subsubdir, file),
+                        os.path.join(IMGDIR, subsubdir, file),
+                    )
+        os.rmdir(os.path.join(IMGDIR, subdir, subsubdir))
+    os.rmdir(os.path.join(IMGDIR, subdir))
+
+# REALLY SMART CODE
+# dirs = [IMGDIR]
+# for dir in os.listdir(IMGDIR):
+#     while os.path.isdir("/".join(dirs + [dir])):
+#         dirs.append(dir)
+#         dir = os.listdir("/".join(dirs))[-1]
+#     if len(dirs) > 1:
+#         os.makedirs("/".join(dirs[:-1]), exist_ok=True)
+#         os.rename("/".join(dirs), "/".join(dirs[:-1]))
+
 
 os.makedirs("useless", exist_ok=True)
 
 for dir in os.listdir(IMGDIR):
     for file in os.listdir(f"{IMGDIR}/{dir}"):
-        if not file.endswith(".jpg"):
+        if not file.endswith(".jpg") or not file.endswith(".png"):
             os.rename(f"{IMGDIR}/{dir}/{file}", f"useless/{file}")
