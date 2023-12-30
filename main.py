@@ -3,12 +3,17 @@ from nudenet import NudeDetector
 import cv2
 import numpy as np
 import random
+import os
+
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 
 def randColor():
     r = random.randrange(0, 255)
     g = random.randrange(0, 255)
     b = random.randrange(0, 255)
-    return (r,g,b)
+    return (r, g, b)
+
 
 # initialize detecter (downloads the checkpoint file automatically the first time)
 detector = NudeDetector()
@@ -29,7 +34,7 @@ for coord in coordinates:
     score = coord["score"]
 
     # Draw bounding box on image
-    img = cv2.rectangle(img, (x1, y1), (x2+x1, y2+y1), randColor(), 2)
+    img = cv2.rectangle(img, (x1, y1), (x2 + x1, y2 + y1), randColor(), 2)
 
     # Add text to image
     font = cv2.FONT_HERSHEY_SIMPLEX

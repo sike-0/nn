@@ -5,6 +5,8 @@ import pickle
 import numpy as np
 import umap
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 FACEDIR = "faces"
 
 embedder = FaceNet()

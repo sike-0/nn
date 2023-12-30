@@ -1,5 +1,8 @@
 import os
 
+# set current working directory to the directory of this file
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 # Directory structure:
 # imgs/
 #   - site1

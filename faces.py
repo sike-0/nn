@@ -5,6 +5,8 @@ from threading import Thread
 import os
 import cv2
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 IMGDIR = "imgs"
 FACEDIR = "faces"
 
