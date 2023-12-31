@@ -28,28 +28,21 @@ logging.basicConfig(level=logging.INFO)
 LOG = logging.getLogger(__name__)
 
 
-def getFaceCoords(image: cv2.typing.MatLike, imgPath: str) -> list | None:
-    result = RetinaFace.detect_faces(image)
-    if type(result) != dict:
+def getFaceCoords(imgPath: str) -> list | None:
+    result = RetinaFace.extract_faces(imgPath)
+    if len(result) == 0:
         return None
-    coords = [result[key]["facial_area"] for key in result]
-    return coords
+    return result
 
 
 def crop_and_save(dir: str, file: str) -> None:
     filepath = os.path.join(IMGDIR, dir, file)
     filename = file.split(".")[0]
-    img = cv2.imread(filepath)
-    faceCoords = getFaceCoords(img, filepath)
-    if faceCoords:
-        for i, faceCoord in enumerate(faceCoords):
-            [x1, y1, x2, y2] = faceCoord
-            x1 = int(x1)
-            y1 = int(y1)
-            x2 = int(x2)
-            y2 = int(y2)
-            face = img[y1:y2, x1:x2]
+    faces = getFaceCoords(filepath)
+    if faces:
+        for i, face in enumerate(faces):
             face = cv2.resize(face, (160, 160))
+            face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
             savepath = os.path.join(FACEDIR, dir, f"{filename}_face_{i}.jpg")
             cv2.imwrite(savepath, face)
             LOG.info(f"Done {savepath}")

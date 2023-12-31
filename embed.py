@@ -18,7 +18,7 @@ stats = {}
 for dir in os.listdir(FACEDIR):
     imgFiles = os.listdir(os.path.join(FACEDIR, dir))
     stats[dir] = len(imgFiles)
-    for file in os.listdir(os.path.join(FACEDIR, dir)):
+    for file in imgFiles:
         if file.endswith(".jpg"):
             img = cv2.imread(f"{FACEDIR}/{dir}/{file}")
             if img is None:
