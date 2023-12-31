@@ -54,8 +54,8 @@ def main():
                 if os.path.exists(f"{FACEDIR}/{dir}/{filename}_face_0.jpg"):
                     print(f"{FACEDIR}/{dir}/{filename}_face_0.jpg exists skipping")
                 if (
-                    file.endswith(".jpg")
-                    or file.endswith("png")
+                    (file.endswith(".jpg")
+                    or file.endswith("png"))
                     and not os.path.exists(f"{FACEDIR}/{dir}/{filename}_face_0.jpg")
                 ):
                     thread = Thread(
@@ -76,8 +76,8 @@ def main():
             if os.path.exists(f"{FACEDIR}/{dir}_face_0.jpg"):
                 print(f"{FACEDIR}/{dir}_face_0.jpg exists skipping")
             if (
-                dir.endswith(".jpg")
-                or dir.endswith("png")
+                (dir.endswith(".jpg")
+                or dir.endswith("png"))
                 and not os.path.exists(f"{FACEDIR}/{dir}_face_0.jpg")
             ):
                 thread = Thread(
