@@ -74,7 +74,7 @@ def main():
                                 threads.remove(t)
         else:
             if os.path.exists(f"{FACEDIR}/{dir}_face_0.jpg"):
-                    print(f"{FACEDIR}/{dir}_face_0.jpg exists skipping")
+                print(f"{FACEDIR}/{dir}_face_0.jpg exists skipping")
             if (
                 dir.endswith(".jpg")
                 or dir.endswith("png")
