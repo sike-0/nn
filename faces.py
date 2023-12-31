@@ -43,7 +43,7 @@ def crop_and_save(dir: str, file: str) -> None:
 
 def main():
     if len(sys.argv) > 1 and sys.argv[1] == "colab":
-        MAX_THREADS = 15
+        MAX_THREADS = 20
     else:
         MAX_THREADS = 3
     threads: list[Thread] = []
@@ -54,7 +54,7 @@ def main():
                 if (
                     file.endswith(".jpg")
                     or file.endswith("png")
-                    and not os.path.exists(f"{FACEDIR}/{dir}/{filename}_face_1.jpg")
+                    and not os.path.exists(f"{FACEDIR}/{dir}/{filename}_face_0.jpg")
                 ):
                     thread = Thread(
                         target=crop_and_save,
@@ -74,7 +74,7 @@ def main():
             if (
                 dir.endswith(".jpg")
                 or dir.endswith("png")
-                and not os.path.exists(f"{FACEDIR}/{dir}/{dir}_face_1.jpg")
+                and not os.path.exists(f"{FACEDIR}/{dir}_face_0.jpg")
             ):
                 thread = Thread(
                     target=crop_and_save,
