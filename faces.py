@@ -51,6 +51,8 @@ def main():
         if os.path.isdir(os.path.join(IMGDIR, dir)):
             for file in os.listdir(os.path.join(IMGDIR, dir)):
                 filename = file.split(".")[0]
+                if os.path.exists(f"{FACEDIR}/{dir}/{filename}_face_0.jpg"):
+                    print(f"{FACEDIR}/{dir}/{filename}_face_0.jpg exists skipping")
                 if (
                     file.endswith(".jpg")
                     or file.endswith("png")
@@ -71,6 +73,8 @@ def main():
                                 t.join()
                                 threads.remove(t)
         else:
+            if os.path.exists(f"{FACEDIR}/{dir}_face_0.jpg"):
+                    print(f"{FACEDIR}/{dir}_face_0.jpg exists skipping")
             if (
                 dir.endswith(".jpg")
                 or dir.endswith("png")
