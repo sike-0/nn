@@ -43,7 +43,7 @@ def crop_and_save(dir: str, file: str) -> None:
 
 def main():
     if len(sys.argv) > 1 and sys.argv[1] == "colab":
-        MAX_THREADS = 20
+        MAX_THREADS = 25
     else:
         MAX_THREADS = 3
     threads: list[Thread] = []
